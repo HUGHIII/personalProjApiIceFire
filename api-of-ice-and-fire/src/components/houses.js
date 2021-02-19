@@ -35,24 +35,36 @@ const Houses = () => {
     "Z",
   ];
 
-  useEffect(() => {
-    getdata();
-  }, []);
+  // useEffect(() => {
+  //   getdata();
+  // }, []);
+  let newArr = [];
   var pg = 1;
-  var getdata = (page) => {
+  var getdata = (page, letter) => {
     axios
       .get(
         `https://www.anapioficeandfire.com/api/houses?page=${page}&pageSize=50`
       )
       .then((res) => {
-        sethouses(res.data);
         console.log(res, "res from get data");
-        console.log(houses, "houses from getdata");
-        if (res.data.length > 0) {
+        res.data.map((h) => {
+          if (h.name.startsWith(`House A`)) {
+            sethouses(houses.concat(h));
+            console.log(houses, "inside map------------->>>");
+          }
+
+          // return houses;
+        });
+
+        // for (var i = 0; i < res.data.length; i++) {
+        //   newArr.push(res.data[i]);
+        // }
+
+        if (res.data[0].name > `House A`) {
+          return houses;
+        } else {
           pg += 1;
           getdata(pg);
-        } else if (!res.data.name) {
-          return;
         }
       })
       .catch((err) => {
@@ -64,6 +76,7 @@ const Houses = () => {
   //   getdata(i);
   // }
   console.log(houses, "after func");
+  console.log(newArr, "newarr after getdata func and HTTP req");
 
   // 1.iterate thru each data item in url fetch and store to 'houses' in useEffect
   // ----use for loop incrementing i var up from 1 inserting each consecutive ascending integer into GET url using pagination IF Resonse data is available/boolean true (documentaion for api states that you should be able to request all of the data by fetching url + /api/houses but when console logged this only shows the first 10 elements)
@@ -79,7 +92,7 @@ const Houses = () => {
         <HousesCard key={h.url} h={h} />
       ))} */}
       {alph.map((a) => {
-        return <h2>{a}</h2>;
+        return <h2 onClick={() => getdata(a)}>{a}</h2>;
       })}
     </div>
   );
